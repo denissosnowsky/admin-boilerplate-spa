@@ -86,11 +86,14 @@ const Component = defineComponent({
   },
 
   setup(props) {
+    const IMAGE_MAX_SIZE = 1048576;
+
     const store = useStore();
     const router = useRouter();
     const product = new Product({});
     const isNew = () => !props.id;
     let listCategory: Ref<string[]> = ref([]);
+
     onBeforeMount(async () => {
       if (!isNew()) {
         const res = await store.dispatch(`productsModule/fetchItem`, props.id);
@@ -106,9 +109,14 @@ const Component = defineComponent({
       entity: product,
       loading: computed(() => store.getters['productsModule/loading']),
     }) as State;
+
     watch(
       () => store.getters['productsModule/selectedItem'],
-      (newValue: Product) => Object.assign(product, newValue),
+      (newValue: Product) =>
+        Object.assign(product, newValue, {
+          previewImage:
+            newValue.previewImage instanceof File ? newValue.previewImage : [],
+        }),
       { immediate: false, deep: true },
     );
     const title = computed(() => {
@@ -120,7 +128,7 @@ const Component = defineComponent({
     const rules = {
       name: [(v: string) => !!v || 'Name is required'],
       previewImage: [
-        (v: FileList) => (v[0] ? v[0].size < 1048576 : true) || 'Max size is 1Mb',
+        (v: FileList) => (v[0] ? v[0].size < IMAGE_MAX_SIZE : true) || 'Max size is 1Mb',
       ],
     };
 
