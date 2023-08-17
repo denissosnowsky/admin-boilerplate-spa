@@ -17,7 +17,11 @@ export function mapValueToInterface(input: any) {
 
       if (Array.isArray(dtoValue)) {
         res[key] = mapValueToInterface(dtoValue);
-      } else if (dtoValue === null || typeof dtoValue !== 'object') {
+      } else if (
+        dtoValue === null ||
+        typeof dtoValue !== 'object' ||
+        dtoValue instanceof File
+      ) {
         res[key] = dtoValue;
       } else {
         res[key] = mapValueToInterface(dtoValue);

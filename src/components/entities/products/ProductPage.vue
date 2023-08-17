@@ -42,6 +42,17 @@
               data-test="product-categoryId"
             />
           </v-col>
+          <v-col cols="12">
+            <v-file-input
+              v-model="state.entity.previewImage"
+              label="Preview image"
+              variant="outlined"
+              hide-details="auto"
+              accept="image/png, image/jpg"
+              :rules="rules.previewImage"
+              data-test="product-previewImage"
+            />
+          </v-col>
         </v-row>
       </div>
     </template>
@@ -108,6 +119,9 @@ const Component = defineComponent({
     });
     const rules = {
       name: [(v: string) => !!v || 'Name is required'],
+      previewImage: [
+        (v: FileList) => (v[0] ? v[0].size < 1048576 : true) || 'Max size is 1Mb',
+      ],
     };
 
     return {

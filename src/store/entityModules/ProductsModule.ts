@@ -4,7 +4,8 @@ import { SearchQueryFilters } from '../../models/filters/SearchQueryFilters';
 import { CrudModule } from '../entityModules/CrudModule';
 import { Product } from '../../models/entities/Product';
 import { EntityType } from '../entityModules/types';
-class ProductModule extends CrudModule<Product, ProductDTO> {
+import { ProductDTORes } from '../../api/dto/ProductDTORes';
+class ProductModule extends CrudModule<Product, ProductDTO, ProductDTORes> {
   constructor() {
     super();
     this.state = {

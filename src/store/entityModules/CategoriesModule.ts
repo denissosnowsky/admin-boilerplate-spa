@@ -5,7 +5,7 @@ import { CrudModule } from '../entityModules/CrudModule';
 import { Category } from '../../models/entities/Category';
 import { EntityType } from '../entityModules/types';
 
-class CategoriesModule extends CrudModule<Category, CategoryDTO> {
+class CategoriesModule extends CrudModule<Category, CategoryDTO, CategoryDTO> {
   constructor() {
     super();
     this.state = {

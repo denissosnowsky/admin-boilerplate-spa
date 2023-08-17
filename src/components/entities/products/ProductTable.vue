@@ -22,6 +22,7 @@ const Component = defineComponent({
         { title: 'Name', key: 'name', sortable: true, searchable: true },
         { title: 'Category ID', key: 'categoryId', sortable: true },
         { title: 'Description', key: 'description', sortable: false },
+        { title: 'Preview Image', key: 'previewImage', sortable: false },
         { title: 'Details', key: 'actions', sortable: false },
       ],
     });

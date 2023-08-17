@@ -19,7 +19,7 @@ export interface IModuleState<Item extends Entity, _ItemDTO> {
   entityType: EntityType;
 }
 
-class CrudModule<Item extends Entity, ItemDTO extends Object>
+class CrudModule<Item extends Entity, ItemDTO extends Object, ItemDTORes extends Object>
   implements Module<IModuleState<Item, ItemDTO>, any>
 {
   namespaced: boolean = true;
@@ -77,6 +77,7 @@ class CrudModule<Item extends Entity, ItemDTO extends Object>
       try {
         const apiClient = getEntityApiClient(state.entityType);
         const response = await apiClient.fetchItems(state.queryFilters);
+        
         commit('setItems', response);
       } catch (err) {
         console.error(err);
@@ -96,8 +97,8 @@ class CrudModule<Item extends Entity, ItemDTO extends Object>
     async fetchAllItems({ state, dispatch }, filter: QueryFilters): Promise<Item[]> {
       try {
         const apiClient = getEntityApiClient(state.entityType);
-        const response: ItemDTO[] = await apiClient.fetchItems(filter);
-        const mapper = <Mapper<Item, ItemDTO>>getEntityMapper(state.entityType);
+        const response: ItemDTORes[] = await apiClient.fetchItems(filter);
+        const mapper = <Mapper<Item, ItemDTO, ItemDTORes>>getEntityMapper(state.entityType);
         const items = response.map(x => mapper.mapFromDTO(x)) ?? [];
         return items;
       } catch (err) {
@@ -122,7 +123,7 @@ class CrudModule<Item extends Entity, ItemDTO extends Object>
         const response = await apiClient.fetchItem(<string>itemId);
         if (!response) return null;
 
-        const mapper = <Mapper<Item, ItemDTO>>getEntityMapper(state.entityType);
+        const mapper = <Mapper<Item, ItemDTO, ItemDTORes>>getEntityMapper(state.entityType);
         const item = mapper.mapFromDTO(response);
         commit('setSelectedItem', item);
         return item;
@@ -153,7 +154,7 @@ class CrudModule<Item extends Entity, ItemDTO extends Object>
 
       try {
         const apiClient = getEntityApiClient(state.entityType);
-        const mapper = <Mapper<Item, ItemDTO>>getEntityMapper(state.entityType);
+        const mapper = <Mapper<Item, ItemDTO, ItemDTORes>>getEntityMapper(state.entityType);
         const response = await apiClient.updateItem(newItem.id, mapper.mapToDTO(newItem));
         if (!response) return null;
 
@@ -182,11 +183,11 @@ class CrudModule<Item extends Entity, ItemDTO extends Object>
 
       try {
         const apiClient = getEntityApiClient(state.entityType);
-        const mapper = <Mapper<Item, ItemDTO>>getEntityMapper(state.entityType);
+        const mapper = <Mapper<Item, ItemDTO, ItemDTORes>>getEntityMapper(state.entityType);
 
         const response = await apiClient.addItem(mapper.mapToDTO(newItem));
         if (!response) return null;
-
+        
         const item = mapper.mapFromDTO(response);
 
         commit('addItem', item);
@@ -264,17 +265,17 @@ class CrudModule<Item extends Entity, ItemDTO extends Object>
   };
 
   mutations: MutationTree<IModuleState<Item, ItemDTO>> = {
-    setItems(state, items: Array<ItemDTO>) {
+    setItems(state, items: Array<ItemDTORes>) {
       try {
-        const mapper = <Mapper<Item, ItemDTO>>getEntityMapper(state.entityType);
+        const mapper = <Mapper<Item, ItemDTO, ItemDTORes>>getEntityMapper(state.entityType);
         state.items = mapper.mapFromDTOList(items);
       } catch (e) {
         console.error(e);
       }
     },
-    setAllItems(state, items: Array<ItemDTO>) {
+    setAllItems(state, items: Array<ItemDTORes>) {
       try {
-        const mapper = <Mapper<Item, ItemDTO>>getEntityMapper(state.entityType);
+        const mapper = <Mapper<Item, ItemDTO, ItemDTORes>>getEntityMapper(state.entityType);
         state.allItems = mapper.mapFromDTOList(items);
       } catch (e) {
         console.error(e);

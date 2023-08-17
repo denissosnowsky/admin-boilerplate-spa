@@ -40,11 +40,13 @@
 
           <template #[`item.previewImage`]="{ item }">
             <img
+              v-if="item.columns.previewImage"
               :src="item.columns.previewImage"
               :alt="item.columns.previewImage"
-              width="50"
-              height="50"
+              width="100"
+              height="100"
             />
+            <div v-else>-</div>
           </template>
 
           <template #[`item.template`]="{ item }">
