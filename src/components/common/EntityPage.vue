@@ -155,6 +155,7 @@ const Component = defineComponent({
     const router = useRouter();
     const valid = ref(true);
     const storePath = computed(() => getEntityStorePath(props.entityType));
+  
     function create() {
       store.dispatch(`${storePath.value}/addItem`, props.item);
       close();

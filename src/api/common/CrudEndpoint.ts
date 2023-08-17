@@ -1,6 +1,7 @@
 import { $http } from './Axios';
 import { FetchCount } from './FetchResult';
 import { QueryFilters } from '../../models/filters/QueryFilters';
+import { Endpoints } from '../constants';
 
 export interface ICrudEndpoint<DTO> {
   fetchItems(queryFilters: QueryFilters): Promise<DTO[]>;
@@ -12,10 +13,17 @@ export interface ICrudEndpoint<DTO> {
 }
 
 export abstract class CrudEndpoint<DTO> implements ICrudEndpoint<DTO> {
-  protected entityEndpoint: string = '';
+  protected entityEndpoint: Endpoints = Endpoints.DEFAULT;
+  private headers = {};
 
-  protected constructor(entityEndpoint: string) {
+  protected constructor(entityEndpoint: Endpoints) {
     this.entityEndpoint = entityEndpoint;
+    this.headers = {
+      'Content-Type':
+        this.entityEndpoint === Endpoints.PRODUCTS
+          ? 'multipart/form-data'
+          : 'application/json',
+    };
   }
 
   public async fetchItems(queryFilters?: QueryFilters): Promise<DTO[]> {
@@ -38,15 +46,19 @@ export abstract class CrudEndpoint<DTO> implements ICrudEndpoint<DTO> {
   }
 
   public async updateItem(itemId: string, newItem: DTO): Promise<DTO> {
-    const response = await $http.put(`/${this.entityEndpoint}/${itemId}`, newItem);
+    const response = await $http.put(`/${this.entityEndpoint}/${itemId}`, newItem, {
+      headers: this.headers,
+    });
     // Fetch updated item in case PUT doesn't return one
     if (response.status >= 200 && response.status < 400 && !response.data)
-      return this.fetchItem(itemId);
+      return await this.fetchItem(itemId);
     return response.data;
   }
 
   public async addItem(item: DTO): Promise<DTO> {
-    const response = await $http.post(`/${this.entityEndpoint}`, item);
+    const response = await $http.post(`/${this.entityEndpoint}`, item, {
+      headers: this.headers,
+    });
     return response.data;
   }
   public async fetchCount(): Promise<FetchCount> {

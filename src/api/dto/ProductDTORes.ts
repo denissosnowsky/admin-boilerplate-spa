@@ -1,10 +1,10 @@
 import { CategoryDTO } from './CategoryDTO';
-export interface ProductDTO {
+
+export interface ProductDTORes {
   id?: string;
   name: string;
   categoryId?: string;
   description?: string;
   category?: CategoryDTO;
-  previewImage?: FileList;
+  previewImage?: { data: ArrayBuffer; type: string };
 }
-
