@@ -102,10 +102,20 @@
           </template>
 
           <template #[`item.hidden`]="{ item }">
-            <v-btn v-if="item.columns.hidden" icon elevation="0">
+            <v-btn
+              v-if="item.columns.hidden"
+              icon
+              elevation="0"
+              @click="toggleVisisbility(item.raw.id, !item.columns.hidden)"
+            >
               <v-icon>fa:fa-regular fa-eye-slash</v-icon>
             </v-btn>
-            <v-btn v-else icon elevation="0">
+            <v-btn
+              v-else
+              icon
+              elevation="0"
+              @click="toggleVisisbility(item.raw.id, !item.columns.hidden)"
+            >
               <v-icon>fa:fa-regular fa-eye</v-icon>
             </v-btn>
           </template>
@@ -237,6 +247,11 @@ const Component = defineComponent({
       return [5, 20, 50, 100];
     }
 
+    function toggleVisisbility(id: string, visibility: boolean) {
+      console.log(id, visibility);
+      store.dispatch(`${storePath}/patchItem`, { id, hidden: visibility });
+    }
+
     return {
       state,
       showDialog,
@@ -244,6 +259,7 @@ const Component = defineComponent({
       totalPages,
       getDropdownItems,
       setOptions,
+      toggleVisisbility,
     };
   },
 });

@@ -8,6 +8,7 @@ export interface ICrudEndpoint<DTO> {
   fetchItem(itemId: number | string): Promise<DTO>;
   deleteItem(itemId: number | string): Promise<number>;
   updateItem(itemId: string | undefined, newItem: DTO): Promise<DTO>;
+  patchItem(itemId: string, newItem: Partial<DTO>): Promise<DTO>;
   addItem(item: DTO): Promise<DTO>;
   fetchCount(): Promise<FetchCount>;
 }
@@ -63,6 +64,14 @@ export abstract class CrudEndpoint<DTO> implements ICrudEndpoint<DTO> {
   }
   public async fetchCount(): Promise<FetchCount> {
     const response = await $http.get(`/${this.entityEndpoint}/count`);
+    return response.data;
+  }
+
+  public async patchItem(itemId: string, newItem: Partial<DTO>): Promise<DTO> {
+    const response = await $http.patch(`/${this.entityEndpoint}/${itemId}`, newItem);
+    // Fetch updated item in case PATCH doesn't return one
+    if (response.status >= 200 && response.status < 400 && !response.data)
+      return await this.fetchItem(itemId);
     return response.data;
   }
 }
