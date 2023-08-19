@@ -101,6 +101,15 @@
             </v-btn>
           </template>
 
+          <template #[`item.hidden`]="{ item }">
+            <v-btn v-if="item.columns.hidden" icon elevation="0">
+              <v-icon>fa:fa-regular fa-eye-slash</v-icon>
+            </v-btn>
+            <v-btn v-else icon elevation="0">
+              <v-icon>fa:fa-regular fa-eye</v-icon>
+            </v-btn>
+          </template>
+
           <template #bottom>
             <v-divider />
             <slot name="bottom">

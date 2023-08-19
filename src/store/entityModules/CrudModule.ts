@@ -77,7 +77,7 @@ class CrudModule<Item extends Entity, ItemDTO extends Object, ItemDTORes extends
       try {
         const apiClient = getEntityApiClient(state.entityType);
         const response = await apiClient.fetchItems(state.queryFilters);
-
+        
         commit('setItems', response);
       } catch (err) {
         console.error(err);
