@@ -77,7 +77,7 @@ class CrudModule<Item extends Entity, ItemDTO extends Object, ItemDTORes extends
       try {
         const apiClient = getEntityApiClient(state.entityType);
         const response = await apiClient.fetchItems(state.queryFilters);
-
+        
         commit('setItems', response);
       } catch (err) {
         console.error(err);
@@ -162,6 +162,37 @@ class CrudModule<Item extends Entity, ItemDTO extends Object, ItemDTORes extends
           getEntityMapper(state.entityType)
         );
         const response = await apiClient.updateItem(newItem.id, mapper.mapToDTO(newItem));
+        if (!response) return null;
+
+        const item = mapper.mapFromDTO(response);
+
+        commit('updateItem', item);
+        commit('setSelectedItem', item);
+
+        dispatchAlert(AlertColor.SUCCESS, alertData, dispatch);
+      } catch (err) {
+        console.error(err);
+        dispatchAlert(AlertColor.ERROR, alertData, dispatch);
+      } finally {
+        commit('setLoading', false);
+      }
+    },
+
+    async patchItem({ state, commit, dispatch }, newItem: Partial<Item> & {id: string}) {
+      commit('setLoading', true);
+
+      const alertData: AlertMessageData = {
+        entityName: state.entityType,
+        action: 'save',
+        id: newItem.id,
+      };
+
+      try {
+        const apiClient = getEntityApiClient(state.entityType);
+        const mapper = <Mapper<Partial<Item>, ItemDTO, ItemDTORes>>(
+          getEntityMapper(state.entityType)
+        );
+        const response = await apiClient.patchItem(newItem.id, mapper.mapToDTO(newItem));
         if (!response) return null;
 
         const item = mapper.mapFromDTO(response);
