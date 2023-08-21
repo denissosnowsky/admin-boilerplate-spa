@@ -107,8 +107,14 @@
               elevation="0"
               @click="toggleVisisbility(item.raw.id, !item.columns.hidden)"
             >
-              <v-icon v-if="item.columns.hidden">fa:fa-regular fa-eye-slash</v-icon>
-              <v-icon v-else>fa:fa-regular fa-eye</v-icon>
+              <v-tooltip :text="defineTooltip(item.columns.hidden)">
+                <template #activator="{ props }">
+                  <v-icon v-if="item.columns.hidden" v-bind="props"
+                    >fa:fa-regular fa-eye-slash</v-icon
+                  >
+                  <v-icon v-else v-bind="props">fa:fa-regular fa-eye</v-icon>
+                </template>
+              </v-tooltip>
             </v-btn>
           </template>
 
@@ -177,6 +183,9 @@ const Component = defineComponent({
   },
 
   setup(props) {
+    const hiddenTooltip = 'This product is hidden';
+    const notHiddenTooltip = 'This product is not hidden';
+
     const store: Store<RootState> = useStore();
     const storePath = getEntityStorePath(props.entityType);
     const router = useRouter();
@@ -240,8 +249,11 @@ const Component = defineComponent({
     }
 
     function toggleVisisbility(id: string, visibility: boolean) {
-      console.log(id, visibility);
       store.dispatch(`${storePath}/patchItem`, { id, hidden: visibility });
+    }
+
+    function defineTooltip(isItemHidden: boolean) {
+      return isItemHidden ? hiddenTooltip : notHiddenTooltip;
     }
 
     return {
@@ -252,6 +264,7 @@ const Component = defineComponent({
       getDropdownItems,
       setOptions,
       toggleVisisbility,
+      defineTooltip,
     };
   },
 });
